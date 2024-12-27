@@ -8,7 +8,14 @@ pub struct BuildMetadata {
     pub branch: String,
     pub commit_hash: String,
     pub repo: String,
-    pub image_name: String
+    pub image_name: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct BuildMetadataQuery {
+    pub version: String,
+    pub branch: String,
+    pub image_name: String,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -17,7 +24,7 @@ pub struct BuildMetadataRequest {
     pub branch: String,
     pub commit_hash: String,
     pub repo: String,
-    pub image_name: String
+    pub image_name: String,
 }
 
 impl TryFrom<BuildMetadataRequest> for BuildMetadata {

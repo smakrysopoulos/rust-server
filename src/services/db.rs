@@ -1,6 +1,6 @@
 use std::env;
 
-use mongodb::{error::Error, results::InsertOneResult, Client, Collection};
+use mongodb::{bson::doc, error::Error, results::InsertOneResult, Client, Collection};
 
 use crate::models::build_metadata_model::BuildMetadata;
 
@@ -16,7 +16,8 @@ impl Database {
             Ok(v) => v.to_string(),
             Err(_) => "mongodb://admin:password@localhost:27017".to_string() //?directConnection=true
         };
-
+        
+        println!("{}", uri);
         let client = Client::with_uri_str(uri).await.unwrap();
         let db = client.database("build_metadata");
         
@@ -46,5 +47,20 @@ impl Database {
         Ok(result)
     }
 
-
+    pub async fn get_metadata(
+        &self,
+        version: &str,
+        branch: &str,
+        image_name: &str,
+    ) -> Result<Option<BuildMetadata>, Error> {
+        let filter = doc! {
+            "version": version,
+            "branch": branch,
+            "image_name": image_name,
+        };
+        self
+            .build_metadata
+            .find_one(filter)
+            .await
+    }
 }
