@@ -23,6 +23,7 @@ async fn main() -> std::io::Result<()> {
     .service(create_metadata)
     .service(get_metadata)
     )
+    .workers(num_cpus::get())
     .bind(("0.0.0.0", 5001))?
     .run()
     .await
