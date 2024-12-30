@@ -57,7 +57,9 @@ pub async fn get_metadata_list(
     if let Some(image_name) = &query.image_name {
         filter.insert("image_name", image_name);
     }
-
+    if filter.is_empty() {
+        return HttpResponse::BadRequest().body("At least one query parameter must be provided.");
+    }
     match db.get_metadata_list(filter).await {
         Ok(metadata_list) => HttpResponse::Ok().json(metadata_list),
         Err(err) => HttpResponse::InternalServerError().body(err.to_string()),
