@@ -8,12 +8,6 @@ use routes::build_metadata_route::{create_metadata, get_metadata, get_metadata_l
 use services::db::Database;
 
 
-#[get("/")]
-async fn hello() -> impl Responder{
-    HttpResponse::Ok().body("Hello Kug")
-}
-
-
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     std::env::set_var("RUST_LOG", "actix_web=info");
@@ -22,7 +16,6 @@ async fn main() -> std::io::Result<()> {
     let db_data = Data::new(db);
     HttpServer::new(move || App::new().app_data(db_data.clone())
     .wrap(Logger::default())
-    .service(hello)
     .service(create_metadata)
     .service(get_metadata)
     .service(get_metadata_list)
