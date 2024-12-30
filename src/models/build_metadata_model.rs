@@ -19,6 +19,7 @@ pub struct BuildMetadataQuery {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct BuildMetadataRequest {
     pub version: String,
     pub branch: String,
@@ -28,6 +29,7 @@ pub struct BuildMetadataRequest {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct BuildMetadataListQuery {
     pub version: Option<String>,
     pub branch: Option<String>,
