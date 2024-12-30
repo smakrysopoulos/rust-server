@@ -14,4 +14,5 @@ COPY --from=builder /app/target/release/rust-server .
 
 ENV RUST_LOG=debug
 ENV MONGO_URI="mongodb://admin:password@db:27017"
+
 CMD ["./rust-server"]
