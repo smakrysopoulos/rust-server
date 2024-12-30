@@ -16,34 +16,48 @@ async def send_request(session, url, total_time, count):
             response_time = end_time - start_time
             total_time += response_time  # Accumulate total time
             count += 1  # Increment count
-            #print(f"Status: {status}, Response: {text}, Response Time: {response_time:.4f}s")
     except Exception as e:
         print(f"Request failed: {e}")
     return total_time, count
 
-# Function to send multiple requests and calculate average response time
-async def send_requests(url, n=1000):
+# Function to send requests in batches and calculate average response time
+async def send_requests(url, initial_rate=1000, rate_increment=1000, duration=60, total_duration=600):
     total_time = 0
     count = 0
+    requests_per_second = initial_rate  # Initial requests per second
+    start_time = time.time()  # Start the overall timer
+
     async with aiohttp.ClientSession() as session:
-        tasks = []
-        for _ in range(n):
-            tasks.append(send_request(session, url, total_time, count))
-        
-        # Execute all tasks concurrently
-        results = await asyncio.gather(*tasks)
+        # Loop for every minute, incrementing the request rate
+        while True:
+            # Check if 10 minutes have passed
+            elapsed_time = time.time() - start_time
+            if elapsed_time >= total_duration:
+                print("Simulation finished after 10 minutes.")
+                break  # Stop the loop after 10 minutes
 
-        # Calculate total time and count from the results
-        total_time = sum(result[0] for result in results)
-        count = sum(result[1] for result in results)
+            tasks = []
+            for _ in range(requests_per_second):
+                tasks.append(send_request(session, url, total_time, count))
 
-    # Calculate average response time
-    if count > 0:
-        average_response_time = total_time / count
-        print(f"Average Response Time: {average_response_time:.4f}s")
-    else:
-        print("No requests were completed successfully.")
+            # Execute all tasks concurrently
+            results = await asyncio.gather(*tasks)
+
+            # Calculate total time and count from the results
+            total_time = sum(result[0] for result in results)
+            count = sum(result[1] for result in results)
+
+            # Calculate and print average response time for the batch
+            if count > 0:
+                average_response_time = total_time / count
+                print(f"Sent {requests_per_second} requests, Average Response Time: {average_response_time:.4f}s")
+            else:
+                print("No requests were completed successfully.")
+
+            # Increase the rate after one minute
+            await asyncio.sleep(duration)  # Sleep for the duration of the current minute
+            requests_per_second += rate_increment  # Increase the request rate
 
 # Main entry point
 if __name__ == "__main__":
-    asyncio.run(send_requests(url, 60000))
+    asyncio.run(send_requests(url, initial_rate=1000, rate_increment=1000, duration=10, total_duration=600))
