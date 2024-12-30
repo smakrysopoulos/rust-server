@@ -37,14 +37,6 @@ impl Database {
            .await
            .ok()
            .expect("Error creating metadata");
-        //let result = match self.build_metadata.insert_one(metadata).await {
-        // Ok(result) => result,
-        // Err(e) => {
-        //     eprintln!("Error creating metadata: {:?}", e);
-        //     // Optionally, return a default value, rethrow, or handle as needed.
-        //     return Err(e); // Or handle accordingly
-        //     }
-        // };
         Ok(result)
     }
 

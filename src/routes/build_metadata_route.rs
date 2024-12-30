@@ -41,7 +41,6 @@ pub async fn get_metadata_list(
     db: Data<Database>,
     query: Query<BuildMetadataListQuery>,
 ) -> HttpResponse {
-    // Build a filter document dynamically based on provided query parameters
     let mut filter = Document::new();
     if let Some(version) = &query.version {
         filter.insert("version", version);
@@ -59,7 +58,6 @@ pub async fn get_metadata_list(
         filter.insert("image_name", image_name);
     }
 
-    // Query the database
     match db.get_metadata_list(filter).await {
         Ok(metadata_list) => HttpResponse::Ok().json(metadata_list),
         Err(err) => HttpResponse::InternalServerError().body(err.to_string()),
