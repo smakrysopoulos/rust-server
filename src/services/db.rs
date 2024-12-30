@@ -1,8 +1,9 @@
 use std::env;
 
-use mongodb::{bson::doc, error::Error, results::InsertOneResult, Client, Collection};
-
+use mongodb::{bson::{doc, Document}, error::Error, results::InsertOneResult, Client, Collection};
 use crate::models::build_metadata_model::BuildMetadata;
+use futures_util::TryStreamExt;
+
 
 
 
@@ -62,5 +63,17 @@ impl Database {
             .build_metadata
             .find_one(filter)
             .await
+    }
+
+    pub async fn get_metadata_list(
+        &self,
+        filter: Document,
+    ) -> Result<Vec<BuildMetadata>, mongodb::error::Error> {
+        let mut cursor = self.build_metadata.find(filter).await?;
+        let mut results = Vec::new();
+        while let Some(document) = cursor.try_next().await? {
+            results.push(document);
+        }
+        Ok(results)
     }
 }
